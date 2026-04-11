@@ -1,0 +1,62 @@
+player,team,draft_year,round,pick,position,contract_total_m,contract_years,career_av,pro_bowls,games_played,games_started,years_active,status
+Aidan Hutchinson,DET,2022,1,2,EDGE,35.1,4,38,1,33,33,3,Active
+Sauce Gardner,NYJ,2022,1,4,CB,36.8,4,36,2,51,51,3,Active
+Garrett Wilson,NYJ,2022,1,10,WR,22.5,4,30,1,51,48,3,Active
+Drake London,ATL,2022,1,8,WR,25.8,4,27,0,50,49,3,Active
+Chris Olave,NO,2022,1,11,WR,21.4,4,28,0,40,40,3,Active
+Jermaine Johnson,NYJ,2022,1,26,EDGE,14.8,4,18,0,42,34,3,Active
+Trevor Penning,NO,2022,1,19,OT,17.6,4,10,0,20,14,3,Active
+Kayvon Thibodeaux,NYG,2022,1,5,EDGE,34.0,4,24,0,44,37,3,Active
+Kyle Hamilton,BAL,2022,1,14,S,19.7,4,35,1,50,50,3,Active
+Jameson Williams,DET,2022,1,12,WR,20.9,4,19,0,38,28,3,Active
+George Karlaftis,KC,2022,1,30,EDGE,13.5,4,22,0,51,36,3,Active
+Devin Lloyd,JAX,2022,1,27,LB,14.5,4,20,0,47,42,3,Active
+Nakobe Dean,PHI,2022,3,83,LB,5.2,4,18,0,45,28,3,Active
+Tariq Woolen,SEA,2022,5,153,CB,4.0,4,22,1,43,43,3,Active
+Brock Purdy,SF,2022,7,262,QB,3.7,4,42,1,35,30,3,Active
+Sam Howell,WAS,2022,5,144,QB,4.1,4,10,0,19,17,3,Active
+Bryce Young,CAR,2023,1,1,QB,37.9,4,12,0,26,20,2,Active
+CJ Stroud,HOU,2023,1,2,QB,36.2,4,32,1,34,34,2,Active
+Will Anderson Jr,HOU,2023,1,3,EDGE,34.4,4,26,0,34,34,2,Active
+Anthony Richardson,IND,2023,1,4,QB,33.3,4,10,0,17,17,2,Active
+Tyree Wilson,LV,2023,1,7,EDGE,28.5,4,8,0,29,16,2,Active
+Devon Witherspoon,SEA,2023,1,5,CB,32.4,4,24,1,28,28,2,Active
+Jalen Carter,PHI,2023,1,9,DT,24.1,4,28,1,34,34,2,Active
+Bijan Robinson,ATL,2023,1,8,RB,24.8,4,30,1,34,34,2,Active
+Quentin Johnston,LAC,2023,1,21,WR,16.6,4,10,0,34,24,2,Active
+Dalton Kincaid,BUF,2023,1,25,TE,15.2,4,16,0,30,26,2,Active
+Puka Nacua,LAR,2023,5,177,WR,4.1,4,22,1,23,22,2,Active
+Sam LaPorta,DET,2023,2,34,TE,9.8,4,20,1,34,32,2,Active
+Zay Flowers,BAL,2023,1,22,WR,16.2,4,18,0,33,33,2,Active
+Tank Dell,HOU,2023,3,69,WR,5.6,4,16,0,27,20,2,Active
+Caleb Williams,CHI,2024,1,1,QB,39.5,4,14,0,17,17,1,Active
+Jayden Daniels,WAS,2024,1,2,QB,37.7,4,22,1,17,17,1,Active
+Marvin Harrison Jr,ARI,2024,1,4,WR,35.7,4,14,0,17,17,1,Active
+Malik Nabers,NYG,2024,1,6,WR,30.2,4,16,1,17,17,1,Active
+Rome Odunze,CHI,2024,1,9,WR,24.0,4,10,0,17,14,1,Active
+Joe Alt,LAC,2024,1,5,OT,33.0,4,18,1,17,17,1,Active
+Quinyon Mitchell,PHI,2024,1,22,CB,16.4,4,14,0,17,17,1,Active
+Laiatu Latu,IND,2024,1,15,EDGE,19.2,4,14,0,17,17,1,Active
+Xavier Worthy,KC,2024,1,28,WR,14.2,4,12,0,17,12,1,Active
+Brock Bowers,LV,2024,1,13,TE,20.5,4,18,1,17,17,1,Active
+Bo Nix,DEN,2024,1,12,QB,21.3,4,14,0,17,17,1,Active
+Trey Benson,ARI,2024,3,66,RB,5.9,4,8,0,17,4,1,Active
+Keon Coleman,BUF,2024,2,33,WR,10.1,4,10,0,17,15,1,Active
+Brian Thomas Jr,JAX,2024,1,23,WR,16.0,4,14,0,17,17,1,Active
+Terrion Arnold,DET,2024,1,24,CB,15.6,4,12,0,17,17,1,Active
+Ladd McConkey,LAC,2024,2,34,WR,9.8,4,14,0,17,17,1,Active
+Patrick Mahomes,KC,2017,1,10,QB,22.7,4,75,4,119,112,8,Active
+Josh Allen,BUF,2018,1,7,QB,25.4,4,72,2,111,111,7,Active
+Lamar Jackson,BAL,2018,1,32,QB,13.2,4,76,2,96,95,7,Active
+Micah Parsons,DAL,2021,1,12,EDGE,20.3,4,50,3,58,55,4,Active
+Ja'Marr Chase,CIN,2021,1,5,WR,30.8,4,48,2,60,58,4,Active
+Dak Prescott,DAL,2016,4,135,QB,3.5,4,68,2,108,108,8,Active
+George Kittle,SF,2017,5,146,TE,3.4,4,55,3,100,96,8,Active
+Fred Warner,SF,2018,3,70,LB,6.5,4,52,2,110,110,7,Active
+Maxx Crosby,LV,2019,4,106,EDGE,4.8,4,48,2,80,74,6,Active
+Amon-Ra St. Brown,DET,2021,4,112,WR,5.1,4,38,2,64,57,4,Active
+Cooper Kupp,LAR,2017,3,69,WR,6.1,4,50,1,89,82,8,Active
+Travis Kelce,KC,2013,3,63,TE,6.2,4,85,5,172,163,12,Active
+Davante Adams,LV,2014,2,53,WR,7.2,4,78,5,156,142,11,Active
+Justin Jefferson,MIN,2020,1,22,WR,15.5,4,52,3,72,70,5,Active
+Tyreek Hill,MIA,2016,5,165,WR,3.7,4,65,4,132,122,9,Active
