@@ -1,12 +1,12 @@
 """
 Fremian University Index  v3.0
 Four pillars, weighted by personal priority:
-  SSS — Social Scene Score            50%
-  LSS — Life Preparedness & Success   30%
-  FQS — Food Hall Quality Score       10%
-  PES — Physical Environment Score    10%
+  LSS — Life Preparedness & Success   50%
+  SSS — Social Scene Score            30%
+  FQS — Food Hall Quality Score       15%
+  PES — Physical Environment Score     5%
 
-Fremian Index (FI) = 0.50*SSS + 0.30*LSS + 0.10*FQS + 0.10*PES
+Fremian Index (FI) = 0.50*LSS + 0.30*SSS + 0.15*FQS + 0.05*PES
 
 Sub-score weights updated v3.0:
   FQS: organic 35%, whole-food 30%, meat 25%, prep 10%
@@ -309,10 +309,10 @@ def compute_scores(universities: List[University]) -> List[University]:
         u.social_scene_score = round(
             0.25*u.peer_intellectual_caliber + 0.35*u.social_vibrancy
             + 0.40*u.student_social_scene, 2)
-        # FI: social scene dominates (50%), success matters (30%), rest 10% each
+        # FI: life success 50%, social scene 30%, food 15%, environment 5%
         u.fremian_index = round(
-            0.50*u.social_scene_score + 0.30*u.life_success_score
-            + 0.10*u.food_quality_score + 0.10*u.physical_env_score, 2)
+            0.50*u.life_success_score + 0.30*u.social_scene_score
+            + 0.15*u.food_quality_score + 0.05*u.physical_env_score, 2)
 
     for key, attr in [
         ("food_quality_score", "food_rank"),
@@ -1477,10 +1477,10 @@ def main() -> None:
     ranked = compute_scores(universities)
 
     print(f"\n{HEADER_LINE}")
-    print("  FREMIAN UNIVERSITY INDEX  v3.0")
-    print("  SSS 50%  |  LSS 30%  |  FQS 10%  |  PES 10%")
-    print("  Social Scene | Life Success | Food Quality | Physical Environment")
-    print(f"  Fremian Index = 0.50×SSS + 0.30×LSS + 0.10×FQS + 0.10×PES")
+    print("  FREMIAN UNIVERSITY INDEX  v3.1")
+    print("  LSS 50%  |  SSS 30%  |  FQS 15%  |  PES 5%")
+    print("  Life Success | Social Scene | Food Quality | Physical Environment")
+    print(f"  Fremian Index = 0.50×LSS + 0.30×SSS + 0.15×FQS + 0.05×PES")
     print(HEADER_LINE)
 
     print_top_n(ranked, 25, "fremian_index",       "FREMIAN INDEX  (Overall)")
@@ -1497,10 +1497,10 @@ def main() -> None:
     print_section("METHODOLOGY")
     print("""
 PILLAR WEIGHTS
-     SSS  Social Scene              50%  beautiful genius people, fun, vibe
-     LSS  Life Success              30%  earnings + alumni network
-     FQS  Food Hall Quality         10%  whole food, organic, grass-fed meats
-     PES  Physical Environment      10%  nature, weather, campus, city
+     LSS  Life Success              50%  earnings + alumni network
+     SSS  Social Scene              30%  beautiful genius people, fun, vibe
+     FQS  Food Hall Quality         15%  whole food, organic, grass-fed meats
+     PES  Physical Environment       5%  nature, weather, campus, city
 
 FQS  Food Hall Quality Score
      organic_sourcing       35%  certified organic, local-farm, regenerative sourcing
