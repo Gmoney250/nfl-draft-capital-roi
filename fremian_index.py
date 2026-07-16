@@ -1,9 +1,9 @@
 """
-Fremian University Index  v2.0
+Fremian University Index  v2.1
 Four equal-weight pillars (25% each):
   FQS — Food Hall Quality Score
   LSS — Life Preparedness & Success Score
-  PES — Physical Environment Score
+  PES — Physical Environment Score  (now includes weather/climate)
   SSS — Social Scene Score
 
 Fremian Index (FI) = 0.25*FQS + 0.25*LSS + 0.25*PES + 0.25*SSS
@@ -40,7 +40,8 @@ class University:
     peer_intellectual_caliber: float   # SAT/acceptance-rate-calibrated genius factor
     social_vibrancy: float             # fun, events, nightlife, energy
     student_social_scene: float        # beautiful + brilliant student body, dating scene
-    # Computed
+    # Computed (including weather_climate pulled from WEATHER dict)
+    weather_climate: float = field(default=0.0)
     food_quality_score: float = field(default=0.0)
     life_success_score: float = field(default=0.0)
     physical_env_score: float = field(default=0.0)
@@ -53,6 +54,235 @@ class University:
     overall_rank: int = field(default=0)
 
 
+# ---------------------------------------------------------------------------
+# Weather/climate scores (0–100, year-round livability)
+# High = warm, sunny, outdoor-friendly most of the year
+# Calibrated to daily-life experience, not just avg temp
+# ---------------------------------------------------------------------------
+WEATHER = {
+    # ── California (gold standard) ──────────────────────────────────────────
+    "Stanford University": 94,
+    "University of California, Berkeley": 88,
+    "UCLA": 93,
+    "University of California, San Diego": 96,
+    "University of California, Santa Barbara": 95,
+    "University of California, Davis": 82,
+    "University of California, Irvine": 93,
+    "Harvey Mudd College": 91,
+    "Pomona College": 91,
+    "Claremont McKenna College": 91,
+    "Scripps College": 91,
+    "University of Southern California": 91,
+    "Caltech": 90,
+    "Pepperdine University": 95,
+    "Santa Clara University": 88,
+    "University of San Diego": 96,
+    "Loyola Marymount University": 92,
+    "Reed College": 56,
+    # ── Florida ─────────────────────────────────────────────────────────────
+    "University of Miami": 88,
+    "University of Florida": 82,
+    "Florida State University": 82,
+    "Rollins College": 85,
+    "Florida A&M University": 82,
+    # ── Texas ───────────────────────────────────────────────────────────────
+    "University of Texas at Austin": 78,
+    "Texas A&M University": 77,
+    "Rice University": 77,
+    "Baylor University": 76,
+    "Southern Methodist University": 80,
+    "Texas Christian University": 80,
+    # ── Georgia ─────────────────────────────────────────────────────────────
+    "Emory University": 78,
+    "Georgia Institute of Technology": 78,
+    "University of Georgia": 76,
+    "Spelman College": 78,
+    "Morehouse College": 78,
+    # ── North Carolina ───────────────────────────────────────────────────────
+    "Duke University": 73,
+    "University of North Carolina at Chapel Hill": 73,
+    "Wake Forest University": 72,
+    "Davidson College": 73,
+    "North Carolina A&T State University": 71,
+    "North Carolina State University": 72,
+    "Furman University": 73,
+    # ── South Carolina ───────────────────────────────────────────────────────
+    "Clemson University": 73,
+    "University of South Carolina": 74,
+    # ── Virginia / DC ────────────────────────────────────────────────────────
+    "University of Virginia": 68,
+    "Virginia Tech": 62,
+    "James Madison University": 65,
+    "College of William & Mary": 67,
+    "University of Richmond": 67,
+    "Hampton University": 68,
+    "Georgetown University": 63,
+    "American University": 63,
+    "George Washington University": 63,
+    "Howard University": 63,
+    # ── Tennessee ────────────────────────────────────────────────────────────
+    "Vanderbilt University": 68,
+    "Rhodes College": 66,
+    "Sewanee: The University of the South": 63,
+    "University of Tennessee": 67,
+    # ── Alabama / Mississippi ─────────────────────────────────────────────────
+    "Auburn University": 73,
+    "University of Alabama": 73,
+    "Mississippi State University": 72,
+    "Tuskegee University": 73,
+    # ── Louisiana ────────────────────────────────────────────────────────────
+    "Tulane University": 76,
+    "Louisiana State University": 74,
+    "Xavier University of Louisiana": 74,
+    # ── Arkansas / Oklahoma ──────────────────────────────────────────────────
+    "University of Arkansas": 65,
+    "University of Oklahoma": 63,
+    "Oklahoma State University": 62,
+    # ── Kentucky / West Virginia ─────────────────────────────────────────────
+    "University of Kentucky": 59,
+    "West Virginia University": 52,
+    "Centre College": 58,
+    # ── Maryland / Delaware ───────────────────────────────────────────────────
+    "Johns Hopkins University": 60,
+    "University of Maryland": 60,
+    "University of Delaware": 60,
+    # ── New York City metro ───────────────────────────────────────────────────
+    "Columbia University": 55,
+    "New York University": 55,
+    "Fordham University": 55,
+    "Barnard College": 55,
+    "Stony Brook University": 52,
+    "University at Buffalo": 40,
+    "Stevens Institute of Technology": 56,
+    "Seton Hall University": 56,
+    # ── New York non-NYC ─────────────────────────────────────────────────────
+    "Cornell University": 44,
+    "Colgate University": 44,
+    "Hamilton College": 44,
+    "Rensselaer Polytechnic Institute": 44,
+    "University of Rochester": 42,
+    "Vassar College": 50,
+    # ── Boston / New England ──────────────────────────────────────────────────
+    "MIT": 50,
+    "Harvard University": 50,
+    "Boston University": 50,
+    "Boston College": 50,
+    "Tufts University": 50,
+    "Northeastern University": 50,
+    "Babson College": 50,
+    "Bentley University": 50,
+    "Wheaton College (MA)": 50,
+    "Wellesley College": 50,
+    "Smith College": 47,
+    "Amherst College": 47,
+    "Mount Holyoke College": 47,
+    "University of Massachusetts Amherst": 46,
+    "Brown University": 50,
+    # ── Connecticut ──────────────────────────────────────────────────────────
+    "Yale University": 52,
+    "Trinity College": 52,
+    "University of Connecticut": 50,
+    # ── New Jersey / Pennsylvania ─────────────────────────────────────────────
+    "Princeton University": 56,
+    "Rutgers University": 55,
+    "Villanova University": 56,
+    "Haverford College": 56,
+    "Bryn Mawr College": 56,
+    "Swarthmore College": 56,
+    "Lehigh University": 53,
+    "Lafayette College": 53,
+    "Bucknell University": 52,
+    "Gettysburg College": 53,
+    "Muhlenberg College": 53,
+    "University of Pennsylvania": 55,
+    "Carnegie Mellon University": 49,
+    "University of Pittsburgh": 49,
+    "Penn State University": 50,
+    "Drexel University": 55,
+    "Duquesne University": 49,
+    # ── New Hampshire / Vermont ───────────────────────────────────────────────
+    "Dartmouth College": 42,
+    "University of New Hampshire": 44,
+    "Middlebury College": 40,
+    "University of Vermont": 42,
+    # ── Maine ────────────────────────────────────────────────────────────────
+    "Bowdoin College": 38,
+    "Colby College": 37,
+    "Bates College": 37,
+    "University of Maine": 36,
+    # ── Rhode Island ─────────────────────────────────────────────────────────
+    # Brown already covered above
+    # ── Ohio ─────────────────────────────────────────────────────────────────
+    "Ohio State University": 48,
+    "Case Western Reserve University": 45,
+    "Kenyon College": 48,
+    "Oberlin College": 45,
+    "Denison University": 48,
+    # ── Indiana ──────────────────────────────────────────────────────────────
+    "Notre Dame University": 46,
+    "Purdue University": 47,
+    "Indiana University Bloomington": 50,
+    "DePauw University": 50,
+    # ── Michigan ─────────────────────────────────────────────────────────────
+    "University of Michigan": 44,
+    "Michigan State University": 44,
+    # ── Wisconsin ────────────────────────────────────────────────────────────
+    "University of Wisconsin-Madison": 42,
+    "Marquette University": 42,
+    # ── Minnesota ────────────────────────────────────────────────────────────
+    "University of Minnesota": 36,
+    "Carleton College": 36,
+    "Macalester College": 38,
+    # ── Illinois ─────────────────────────────────────────────────────────────
+    "Northwestern University": 46,
+    "University of Chicago": 46,
+    "Loyola University Chicago": 46,
+    # ── Iowa ─────────────────────────────────────────────────────────────────
+    "University of Iowa": 43,
+    "Iowa State University": 43,
+    "Grinnell College": 42,
+    # ── Missouri / Kansas / Nebraska ──────────────────────────────────────────
+    "University of Missouri": 52,
+    "University of Kansas": 52,
+    "Kansas State University": 51,
+    "University of Nebraska-Lincoln": 50,
+    "Washington University in St. Louis": 54,
+    # ── Colorado (sunny but cold winters; great for outdoor lovers) ───────────
+    "University of Colorado Boulder": 66,
+    "Colorado College": 66,
+    "United States Air Force Academy": 65,
+    "Colorado State University": 65,
+    "University of Denver": 66,
+    # ── Utah ─────────────────────────────────────────────────────────────────
+    "Brigham Young University": 63,
+    # ── Pacific Northwest (mild but gray/rainy) ───────────────────────────────
+    "University of Washington": 55,
+    "Gonzaga University": 52,
+    "Whitman College": 52,
+    "University of Puget Sound": 54,
+    # ── Mountain West ────────────────────────────────────────────────────────
+    "University of Montana": 42,
+    "University of Wyoming": 42,
+    "University of Nevada, Reno": 68,
+    "University of New Mexico": 72,
+    # ── Misc ─────────────────────────────────────────────────────────────────
+    "University of Arizona": 76,
+    "Arizona State University": 76,
+    "University of Oregon": 57,
+    "University of Colorado Boulder": 66,
+    "University of Denver": 66,
+    "Fordham University": 55,
+    "Rollins College": 85,
+    "University of San Diego": 96,
+    "Loyola University Chicago": 46,
+    "Fordham University": 55,
+    "Babson College": 50,
+    "Bentley University": 50,
+    "Lehigh University": 53,
+    "Furman University": 73,
+}
+
+
 def compute_scores(universities: List[University]) -> List[University]:
     for u in universities:
         u.food_quality_score = round(
@@ -62,9 +292,11 @@ def compute_scores(universities: List[University]) -> List[University]:
             0.30*u.median_earnings + 0.25*u.alumni_impact
             + 0.20*u.career_placement + 0.15*u.grad_school_quality
             + 0.10*u.life_satisfaction, 2)
+        u.weather_climate = WEATHER.get(u.name, 58.0)
         u.physical_env_score = round(
-            0.20*u.gym_quality + 0.30*u.nature_access
-            + 0.25*u.campus_scenery + 0.25*u.city_quality, 2)
+            0.15*u.gym_quality + 0.25*u.nature_access
+            + 0.20*u.campus_scenery + 0.20*u.city_quality
+            + 0.20*u.weather_climate, 2)
         u.social_scene_score = round(
             0.35*u.peer_intellectual_caliber + 0.35*u.social_vibrancy
             + 0.30*u.student_social_scene, 2)
@@ -1137,6 +1369,28 @@ RAW_DATA: List[dict] = [
      "median_earnings":74,"alumni_impact":71,"career_placement":73,"grad_school_quality":74,"life_satisfaction":72,
      "gym_quality":68,"nature_access":42,"campus_scenery":55,"city_quality":82,
      "peer_intellectual_caliber":72,"social_vibrancy":65,"student_social_scene":62},
+
+    # ── New additions v2.1 ───────────────────────────────────────────────────
+    # University of Miami — Coral Gables; beach access, Miami city, strong finance/real estate alumni
+    {"name":"University of Miami","state":"FL","type":"Private",
+     "whole_food_emphasis":70,"meat_quality":68,"organic_sourcing":64,"preparation_excellence":72,
+     "median_earnings":76,"alumni_impact":80,"career_placement":76,"grad_school_quality":78,"life_satisfaction":84,
+     "gym_quality":88,"nature_access":85,"campus_scenery":85,"city_quality":92,
+     "peer_intellectual_caliber":78,"social_vibrancy":93,"student_social_scene":92},
+
+    # Texas Christian University — Fort Worth; known for beautiful students, growing academics, DFW metro
+    {"name":"Texas Christian University","state":"TX","type":"Private",
+     "whole_food_emphasis":72,"meat_quality":74,"organic_sourcing":63,"preparation_excellence":73,
+     "median_earnings":72,"alumni_impact":74,"career_placement":73,"grad_school_quality":73,"life_satisfaction":81,
+     "gym_quality":88,"nature_access":60,"campus_scenery":78,"city_quality":80,
+     "peer_intellectual_caliber":78,"social_vibrancy":84,"student_social_scene":87},
+
+    # Loyola Marymount University — Bluffs above LA; gorgeous campus, LA access, solid business school
+    {"name":"Loyola Marymount University","state":"CA","type":"Private",
+     "whole_food_emphasis":72,"meat_quality":68,"organic_sourcing":70,"preparation_excellence":73,
+     "median_earnings":74,"alumni_impact":74,"career_placement":74,"grad_school_quality":74,"life_satisfaction":82,
+     "gym_quality":78,"nature_access":72,"campus_scenery":85,"city_quality":88,
+     "peer_intellectual_caliber":76,"social_vibrancy":76,"student_social_scene":80},
 ]
 
 
@@ -1184,7 +1438,7 @@ def save_csv(universities: List[University], path: str) -> None:
         "life_success_score","success_rank",
         "median_earnings","alumni_impact","career_placement","grad_school_quality","life_satisfaction",
         "physical_env_score","physical_rank",
-        "gym_quality","nature_access","campus_scenery","city_quality",
+        "gym_quality","nature_access","campus_scenery","city_quality","weather_climate",
         "social_scene_score","social_rank",
         "peer_intellectual_caliber","social_vibrancy","student_social_scene",
         "fremian_index",
@@ -1213,7 +1467,7 @@ def main() -> None:
     ranked = compute_scores(universities)
 
     print(f"\n{HEADER_LINE}")
-    print("  FREMIAN UNIVERSITY INDEX  v2.0")
+    print("  FREMIAN UNIVERSITY INDEX  v2.1")
     print("  Four equal-weight pillars (25% each)")
     print("  FQS Food Hall Quality | LSS Life Success | PES Physical Environment | SSS Social Scene")
     print(f"  Fremian Index = 0.25×FQS + 0.25×LSS + 0.25×PES + 0.25×SSS")
@@ -1222,7 +1476,7 @@ def main() -> None:
     print_top_n(ranked, 25, "fremian_index",       "FREMIAN INDEX  (Overall)")
     print_top_n(ranked, 25, "food_quality_score",  "FOOD HALL QUALITY SCORE  (FQS)")
     print_top_n(ranked, 25, "life_success_score",  "LIFE PREPAREDNESS & SUCCESS  (LSS)")
-    print_top_n(ranked, 25, "physical_env_score",  "PHYSICAL ENVIRONMENT  (PES) — gym · nature · scenery · city")
+    print_top_n(ranked, 25, "physical_env_score",  "PHYSICAL ENVIRONMENT  (PES) — gym · nature · scenery · city · weather")
     print_top_n(ranked, 25, "social_scene_score",  "SOCIAL SCENE  (SSS) — genius peers · social vibrancy · beautiful people")
 
     print_full_rankings(ranked)
@@ -1246,10 +1500,11 @@ LSS  Life Preparedness & Success Score
      life_satisfaction      10%  alumni-reported life and career satisfaction
 
 PES  Physical Environment Score
-     gym_quality            20%  rec-center quality, pools, weight rooms, courts
-     nature_access          30%  hiking trails, mountains, beaches, parks nearby
-     campus_scenery         25%  breathtaking architecture, landscapes, and views
-     city_quality           25%  proximity to a vibrant city with jobs and culture
+     gym_quality            15%  rec-center quality, pools, weight rooms, courts
+     nature_access          25%  hiking trails, mountains, beaches, parks nearby
+     campus_scenery         20%  breathtaking architecture, landscapes, and views
+     city_quality           20%  proximity to a vibrant city with jobs and culture
+     weather_climate        20%  year-round livability — sunshine, warmth, outdoor days
 
 SSS  Social Scene Score
      peer_intellectual_caliber  35%  genius factor — calibrated to admit rates & SAT ranges
