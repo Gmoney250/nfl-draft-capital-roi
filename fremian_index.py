@@ -1,12 +1,18 @@
 """
-Fremian University Index  v2.1
-Four equal-weight pillars (25% each):
-  FQS — Food Hall Quality Score
-  LSS — Life Preparedness & Success Score
-  PES — Physical Environment Score  (now includes weather/climate)
-  SSS — Social Scene Score
+Fremian University Index  v3.0
+Four pillars, weighted by personal priority:
+  SSS — Social Scene Score            50%
+  LSS — Life Preparedness & Success   30%
+  FQS — Food Hall Quality Score       10%
+  PES — Physical Environment Score    10%
 
-Fremian Index (FI) = 0.25*FQS + 0.25*LSS + 0.25*PES + 0.25*SSS
+Fremian Index (FI) = 0.50*SSS + 0.30*LSS + 0.10*FQS + 0.10*PES
+
+Sub-score weights updated v3.0:
+  FQS: organic 35%, whole-food 30%, meat 25%, prep 10%
+  LSS: earnings 50%, alumni network 40%, career placement 10%
+       (grad school & life satisfaction removed — career-outcome focused)
+  SSS: student scene 40%, social vibrancy 35%, peer caliber 25%
 """
 
 import csv
@@ -285,24 +291,28 @@ WEATHER = {
 
 def compute_scores(universities: List[University]) -> List[University]:
     for u in universities:
+        # FQS: organic-first, then whole-food, then meat quality
         u.food_quality_score = round(
-            0.35*u.whole_food_emphasis + 0.30*u.meat_quality
-            + 0.20*u.organic_sourcing + 0.15*u.preparation_excellence, 2)
+            0.30*u.whole_food_emphasis + 0.25*u.meat_quality
+            + 0.35*u.organic_sourcing + 0.10*u.preparation_excellence, 2)
+        # LSS: career-outcome focused — earnings + network, no grad school
         u.life_success_score = round(
-            0.30*u.median_earnings + 0.25*u.alumni_impact
-            + 0.20*u.career_placement + 0.15*u.grad_school_quality
-            + 0.10*u.life_satisfaction, 2)
+            0.50*u.median_earnings + 0.40*u.alumni_impact
+            + 0.10*u.career_placement, 2)
+        # PES: weather + nature + scenery + city + gym
         u.weather_climate = WEATHER.get(u.name, 58.0)
         u.physical_env_score = round(
             0.15*u.gym_quality + 0.25*u.nature_access
             + 0.20*u.campus_scenery + 0.20*u.city_quality
             + 0.20*u.weather_climate, 2)
+        # SSS: beautiful people + fun first, genius second
         u.social_scene_score = round(
-            0.35*u.peer_intellectual_caliber + 0.35*u.social_vibrancy
-            + 0.30*u.student_social_scene, 2)
+            0.25*u.peer_intellectual_caliber + 0.35*u.social_vibrancy
+            + 0.40*u.student_social_scene, 2)
+        # FI: social scene dominates (50%), success matters (30%), rest 10% each
         u.fremian_index = round(
-            0.25*u.food_quality_score + 0.25*u.life_success_score
-            + 0.25*u.physical_env_score + 0.25*u.social_scene_score, 2)
+            0.50*u.social_scene_score + 0.30*u.life_success_score
+            + 0.10*u.food_quality_score + 0.10*u.physical_env_score, 2)
 
     for key, attr in [
         ("food_quality_score", "food_rank"),
@@ -1467,10 +1477,10 @@ def main() -> None:
     ranked = compute_scores(universities)
 
     print(f"\n{HEADER_LINE}")
-    print("  FREMIAN UNIVERSITY INDEX  v2.1")
-    print("  Four equal-weight pillars (25% each)")
-    print("  FQS Food Hall Quality | LSS Life Success | PES Physical Environment | SSS Social Scene")
-    print(f"  Fremian Index = 0.25×FQS + 0.25×LSS + 0.25×PES + 0.25×SSS")
+    print("  FREMIAN UNIVERSITY INDEX  v3.0")
+    print("  SSS 50%  |  LSS 30%  |  FQS 10%  |  PES 10%")
+    print("  Social Scene | Life Success | Food Quality | Physical Environment")
+    print(f"  Fremian Index = 0.50×SSS + 0.30×LSS + 0.10×FQS + 0.10×PES")
     print(HEADER_LINE)
 
     print_top_n(ranked, 25, "fremian_index",       "FREMIAN INDEX  (Overall)")
@@ -1486,30 +1496,34 @@ def main() -> None:
 
     print_section("METHODOLOGY")
     print("""
-FQS  Food Hall Quality Score
-     whole_food_emphasis    35%  whole-food-first, unprocessed, nutrient-dense menus
-     meat_quality           30%  grass-fed beef, pastured poultry, wild-caught fish
-     organic_sourcing       20%  certified organic, local-farm, regenerative sourcing
-     preparation_excellence 15%  chef-led kitchens, fresh daily prep, seasonal variety
+PILLAR WEIGHTS
+     SSS  Social Scene              50%  beautiful genius people, fun, vibe
+     LSS  Life Success              30%  earnings + alumni network
+     FQS  Food Hall Quality         10%  whole food, organic, grass-fed meats
+     PES  Physical Environment      10%  nature, weather, campus, city
 
-LSS  Life Preparedness & Success Score
-     median_earnings        30%  normalised median salary 5-10 yrs out (College Scorecard)
-     alumni_impact          25%  CEOs, executives, Forbes lists, field-defining achievement
-     career_placement       20%  employed/grad school within 6 months
-     grad_school_quality    15%  % attending top graduate/professional programmes
-     life_satisfaction      10%  alumni-reported life and career satisfaction
+FQS  Food Hall Quality Score
+     organic_sourcing       35%  certified organic, local-farm, regenerative sourcing
+     whole_food_emphasis    30%  whole-food-first, unprocessed, nutrient-dense menus
+     meat_quality           25%  grass-fed beef, pastured poultry, wild-caught fish
+     preparation_excellence 10%  chef-led kitchens, fresh daily prep, seasonal variety
+
+LSS  Life Success Score  (career-outcome focused — no grad school or satisfaction)
+     median_earnings        50%  normalised median salary 5-10 yrs out (College Scorecard)
+     alumni_impact          40%  CEOs, executives, Forbes lists — who your network becomes
+     career_placement       10%  % placed at top companies within 6 months of graduation
 
 PES  Physical Environment Score
-     gym_quality            15%  rec-center quality, pools, weight rooms, courts
      nature_access          25%  hiking trails, mountains, beaches, parks nearby
      campus_scenery         20%  breathtaking architecture, landscapes, and views
      city_quality           20%  proximity to a vibrant city with jobs and culture
      weather_climate        20%  year-round livability — sunshine, warmth, outdoor days
+     gym_quality            15%  rec-center quality, pools, weight rooms, courts
 
-SSS  Social Scene Score
-     peer_intellectual_caliber  35%  genius factor — calibrated to admit rates & SAT ranges
-     social_vibrancy            35%  fun events, energy, nightlife, activities, social life
-     student_social_scene       30%  beautiful + brilliant student body, dating scene quality
+SSS  Social Scene Score  (DOMINANT PILLAR — 50% of total index)
+     student_social_scene       40%  beautiful + brilliant student body, dating scene
+     social_vibrancy            35%  fun events, energy, nightlife, activities
+     peer_intellectual_caliber  25%  genius factor — calibrated to admit rates & SAT ranges
 """.strip())
 
 
